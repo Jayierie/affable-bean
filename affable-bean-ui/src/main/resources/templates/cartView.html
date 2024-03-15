@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html th:replace="layout/masterLayout :: layout(~{::main})" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<main id="cartView" role="main">
+    <div class="container">
+        <form method="post"
+              th:object="${cartItem}"
+              th:action="@{/ui/check-price}"
+              style="background: rgba(245, 232, 160, 0.49)"
+        >
+            <div class="row">
+                <div class="col" th:if="${cartItems.size() != 0}">
+                    <h3 th:if="${checkButton}"> Total <span
+                            th:text="${'$' + #numbers.formatDecimal(totalPrice, 1, 2, 'POINT')}"></span></h3>
+
+                    <table class="table table-striped"
+                           style="background: rgba(245, 232, 160, 0.49)"
+                    >
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th th:if="${checkButton}">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td>
+                                <img th:src="@{'/images/products/' + ${item.name} + '.png'}" alt="product image">
+                            </td>
+                            <td th:text="${item.name}"></td>
+                            <td th:text="${'$' + item.price}"></td>
+                            <td>
+                                <input id="quantity-input" type="number" th:field="*{quantityList}"
+                                       style="
+                                           width: 50px;
+                                           padding: 6px;
+                                           border-radius: 6px;
+                                           box-shadow: 2px 4px 12px #818182;"
+                                       th:if="${!item.isVisible()}"
+                                >
+                                <span
+                                        th:text="${item.quantity + '= $' + #numbers.formatDecimal((item.quantity * item.price), 1, 2, 'POINT')}"
+                                        th:if="${item.isVisible()}"
+                                ></span>
+                            </td>
+                            <td th:if="${item.isVisible()}">
+                                <a class="btn btn-outline-danger"
+                                   th:href="@{'/ui/delete?id=' + ${item.id}}">Delete</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="row" th:if="${checkButton}">
+                        <div class="col">
+                            <a class="btn btn-outline-secondary ml-2 mr-2" th:href="@{/ui/checkout}">Checkout</a>
+                            <a class="btn btn-outline-success ml-2 mr-2" th:href="@{/ui/home}">Continue Shopping</a>
+                            <a class="btn btn-outline-danger ml-2 mr-2" th:href="@{/ui/clear-cart}">Clear Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input class="btn btn-primary" type="submit" value="Check Price"
+                   th:if="${!checkButton}"
+            >
+        </form>
+        <div class="row">
+            <div class="col" th:unless="${cartItems.size() != 0}">
+                <div class="text-center">
+                    <h3>No Content Found!</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
